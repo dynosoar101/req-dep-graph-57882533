@@ -8,6 +8,9 @@ clean:
 main: main.o fileIO.o deps.o
 	gcc $(CFLAGS) -lm fileIO.o deps.o -o main 
 
+main.o: main.c fileIO.h deps.h
+	gcc $(CFLAGS) -c main.c -o main.o
+
 fileIO.o: fileIO.c fileIO.h 
 	gcc $(CFLAGS) -c fileIO.c -o fileIO.o
 

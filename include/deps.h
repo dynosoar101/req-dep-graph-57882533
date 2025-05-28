@@ -1,7 +1,7 @@
 //this header file will define the prototypes for generating the graphs and reports
 //of the srs parsed dependencies
 
-ifndef DEPS_H //defines DEPS_H if not already defined
+#ifndef DEPS_H //defines DEPS_H if not already defined
 #define DEPS_H
 #include "fileIO.h" //this module is dependent on fileIO module
 
@@ -12,4 +12,4 @@ void generateGraph(File *file); //function to generate the graph of the dependen
 File *generateReport(File *file); //function to generate the report of the dependencies
 //returns a report detailing all of the dependencies
 
-endif //eof 
+#endif //eof 

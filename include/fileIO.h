@@ -5,10 +5,10 @@
 #define FILEIO_H
 
 typedef struct {
-    char *name; //name of the srs
-    char *description; //description of the srs
-    char *author; //author of the srs
-    char *date; //date of the srs
+    char *id; //unique identifier for the srs
+    char *title; //name of the srs
+    char *parent; //description of the srs
+    char *child; //author of the srs
 } File; //structure to hold the srs information
 
 File *parseSrs(char *filename); //function to read srs file
