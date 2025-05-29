@@ -18,13 +18,24 @@ void generateGraph(FILE *file) {
     return;
 }
 
-//to be implemented
-void *generateReport(FILE *file) {
-    //open the file
-    //check if file is empty or if no valid file is given
-    //parse the file and generate the report
-    //return the report
-    return;
+void generateReport(DepNode *head, const char *filename) {
+    FILE *out = fopen(filename, "w");
+    if (!out) {
+        printf("Could not open report file for writing.\n");
+        return;
+    }
+
+    DepNode *curr = head;
+    while (curr) {
+        if (curr->type == NODE_RECORD) {
+            fprintf(out, "Line %d: %s --\n", curr->line, curr->id);
+        } else if (curr->type == NODE_DEPENDENCY) {
+            fprintf(out, "Line %d: %s -> %s\n", curr->line, curr->from, curr->to);
+        }
+        curr = curr->next;
+    }
+
+    fclose(out);
 }
 
 //eof
