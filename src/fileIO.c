@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <regex.h> //for regex operations
+#include <regex.h>
 #include <ctype.h>
 
 void addRecord(DepNode **head, DepNode **tail, const char *id, int line) {
@@ -42,13 +42,12 @@ void addDependency(DepNode **head, DepNode **tail, const char *from, const char 
 // Helper to trim leading/trailing whitespace in-place
 void trim(char *str) {
     // Trim leading
-    while (isspace((unsigned char)*str)) str++;
-    // If all spaces
-    if (*str == 0) return;
+    char *start = str;
+    while (isspace((unsigned char)*start)) start++;
+    if (start != str) memmove(str, start, strlen(start) + 1);
     // Trim trailing
     char *end = str + strlen(str) - 1;
-    while (end > str && isspace((unsigned char)*end)) end--;
-    *(end + 1) = 0;
+    while (end >= str && isspace((unsigned char)*end)) *end-- = '\0';
 }
 
 void parseSrs(char *filePath, DepNode **head, DepNode **tail) {
@@ -62,13 +61,6 @@ void parseSrs(char *filePath, DepNode **head, DepNode **tail) {
     int lineCount = 0;
     char current_id[32] = "";
     int current_record_line = 0;
-
-    // Print the first 3 lines
-    while (fgets(line, sizeof(line), file) != NULL && lineCount < 3) {
-        printf("%s", line);
-        lineCount++;
-    }
-    lineCount++; // Increment lineCount for the first 3 lines
 
     regex_t req_regex;
     const char *pattern = "REQ-[A-Z]{2}-[A-Z]{4}-[0-9]{4}";
@@ -94,7 +86,6 @@ void parseSrs(char *filePath, DepNode **head, DepNode **tail) {
         else if (strncmp(trimmed, "Parents:", 8) == 0 || strncmp(trimmed, "Parent:", 7) == 0) {
             char *parent_ptr = strchr(trimmed, ':');
             if (parent_ptr) parent_ptr++;
-            // Tokenize and trim each parent
             char *token = strtok(parent_ptr, ",");
             while (token) {
                 trim(token);
@@ -113,7 +104,6 @@ void parseSrs(char *filePath, DepNode **head, DepNode **tail) {
         else if (strncmp(trimmed, "Children:", 9) == 0 || strncmp(trimmed, "Child:", 6) == 0) {
             char *child_ptr = strchr(trimmed, ':');
             if (child_ptr) child_ptr++;
-            // Tokenize and trim each child
             char *token = strtok(child_ptr, ",");
             while (token) {
                 trim(token);
@@ -132,24 +122,6 @@ void parseSrs(char *filePath, DepNode **head, DepNode **tail) {
 
     regfree(&req_regex);
     fclose(file);
-
-    // Print all records and dependencies
-    DepNode *curr = *head;
-    while (curr) {
-        if (curr->type == NODE_RECORD) {
-            printf("Line %d: %s --\n", curr->line, curr->id);
-        } else if (curr->type == NODE_DEPENDENCY) {
-            printf("Line %d: %s -> %s\n", curr->line, curr->from, curr->to);
-        }
-        curr = curr->next;
-    }
-
-    // Free the list
-    while (*head) {
-        DepNode *tmp = *head;
-        *head = (*head)->next;
-        free(tmp);
-    }
 }
 //eof
 
