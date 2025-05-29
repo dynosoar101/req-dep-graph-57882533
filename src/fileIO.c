@@ -9,49 +9,47 @@
 #include <string.h>
 #include <regex.h> //for regex operations
 
-//the user provides a file path to the srs file
-REQ *parseSrs(char *filename) {//this function parses the srs file and returns a file containing the required dependencies
-    FILE *file = fopen(filename, "r"); //opens the file in read mode
-    //print the first 3 lines of the file
-    int lineCount = 0; //initialize line count
-    char line[256]; //buffer to hold each line
-
-    //this function checks the file's first 3 lines and prints them
-    while(fgets(line, sizeof(line), file) != NULL && lineCount < 3) {
-        printf("%s", line); //prints the line
-        lineCount++; //increments the line count
+void parseSrs(char *filePath) {
+    FILE *file = fopen(filePath, "r");
+    if (!file) {
+        printf("Could not open file: %s\n", filePath);
+        return;
     }
 
-    /*find and extract the requirement tags from each line
-    Using regex library to find tag of format REQ-XX-YYYY-DDDD*/
-    regex_t regex; //defines regex for pattern reconigiton
-    char *pattern = "REQ-[0-9]{2}-[0-9]{4}-[0-9]{4}"; //the pattern to match 
-    regcomp(&regex, pattern, REG_EXTENDED); //compiles the regex pattern
+    char line[256];
+    int lineCount = 0;
 
-    while (fgets(line, sizeof(line), file) != NULL) { //reads the rest of the file
-        lineCount++; //increments the line count
-        regmatch_t match; 
+    // Print the first 3 lines
+    while (fgets(line, sizeof(line), file) != NULL && lineCount < 3) {
+        printf("%s", line);
+        lineCount++;
+    }
+
+    // Prepare regex for requirement pattern
+    regex_t regex;
+    const char *pattern = "REQ-[0-9]{2}-[0-9]{4}-[0-9]{4}";
+    regcomp(&regex, pattern, REG_EXTENDED);
+
+    // Continue scanning the rest of the file
+    while (fgets(line, sizeof(line), file) != NULL) {
+        lineCount++;
+        regmatch_t match;
         char *cursor = line;
-        while (regex(&regex, cursor, 1, &match, 0) == 0){
-            int start = match.rm_so; //start of the match
-            int end = match.rm_eo; //end of the match
-            char tag[256]; //buffer to hold the tag
-            strncpy(tag, cursor + start, end - start); //copies the tag from the line
-            tag[end - start] = '\0'; //null-terminates the tag string
-            printf("%04d: %s\n",lineCount, tag); //prints the line of tag and tag
-
-            cursor += end; //moves the cursor to the end of the match
-            offset += end; //updates the offset to the end of the match
+        int offset = 0;
+        while (regexec(&regex, cursor, 1, &match, 0) == 0) {
+            int len = match.rm_eo - match.rm_so;
+            char req_id[32];
+            strncpy(req_id, cursor + match.rm_so, len);
+            req_id[len] = '\0';
+            printf("%04d: %s\n", lineCount, req_id);
+            cursor += match.rm_eo;
+            offset += match.rm_eo;
         }
-        
     }
 
-    
-    
-
-    return;
+    regfree(&regex);
+    fclose(file);
 }
-
 //eof
 
 

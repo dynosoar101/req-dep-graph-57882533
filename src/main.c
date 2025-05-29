@@ -7,18 +7,14 @@
 
 //main takes in argc and argv to allow for command line arguments
 int main(int argc, char *argv[]) { 
-    char *fileName = NULL; //holds file to be parsed
     if (argc < 2) { //if no command line argument is provided
         printf("Usage: %s <srs-file>\n", argv[0]); //prints usage message
         return 1; //returns error code
     }
-    fileName = argv[1]; //assigns the first command line argument to fileName
+    char *filePath = argv[1]; //assigns the first command line argument to fileName
     //opens the file and does basic checking
-    FILE *file = parseSrs(fileName);
-    if (file == NULL) {
-        printf("Error: Could not parse srs file\n");
-        return 1;
-    }
+    parseSrs(filePath); //calls parseSrs function to read the srs file
+   
 
     generateGraph(file); //generates graph of the dependencies
     generateReport(file); //generates report of the dependencies

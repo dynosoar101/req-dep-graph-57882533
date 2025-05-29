@@ -12,7 +12,7 @@ typedef struct {
     char *child; //author of the srs
 } REQ; //structure to hold the srs information
 
-FILE *parseSrs(char *filename); //function to read srs file
+void parseSrs(char *filePath); //function to read srs file
 //returns a file indicating the noted dependencies
 
 #endif  //eof
