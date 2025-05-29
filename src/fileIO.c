@@ -59,7 +59,7 @@ void parseSrs(char *filePath) {
     }
 
     char line[512];
-    int lineCount = 0;
+    int lineCount = 1;
     char current_id[32] = "";
     int current_record_line = 0;
 
