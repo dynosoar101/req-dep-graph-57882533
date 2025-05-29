@@ -20,7 +20,6 @@ void parseSrs(char *filePath) {
     int lineCount = 0;
     char current_id[32] = "";
 
-    // Linked list for dependencies
     DepNode *head = NULL, *tail = NULL;
 
     // Print the first 3 lines
@@ -33,28 +32,25 @@ void parseSrs(char *filePath) {
     const char *pattern = "REQ-[A-Z]{2}-[A-Z]{4}-[0-9]{4}";
     regcomp(&req_regex, pattern, REG_EXTENDED);
 
-    // Continue scanning the rest of the file
     while (fgets(line, sizeof(line), file) != NULL) {
         lineCount++;
-
-        // Trim leading spaces
         char *trimmed = line;
         while (*trimmed == ' ' || *trimmed == '\t') trimmed++;
 
-        // Check for ID line (record)
+        // ID line
         if (strncmp(trimmed, "ID:", 3) == 0) {
             regmatch_t match;
             if (regexec(&req_regex, trimmed, 1, &match, 0) == 0) {
                 int len = match.rm_eo - match.rm_so;
                 strncpy(current_id, trimmed + match.rm_so, len);
                 current_id[len] = '\0';
-                printf("%04d: %s --\n", lineCount, current_id); // record
+                addRecord(&head, &tail, current_id, lineCount);
             }
         }
-        // Check for Parents/Parent line
+        // Parents/Parent line
         else if (strncmp(trimmed, "Parents:", 8) == 0 || strncmp(trimmed, "Parent:", 7) == 0) {
             char *parent_ptr = strchr(trimmed, ':');
-            if (parent_ptr) parent_ptr++; // move past ':'
+            if (parent_ptr) parent_ptr++;
             char *token = strtok(parent_ptr, ",");
             while (token) {
                 while (*token == ' ' || *token == '\t') token++;
@@ -64,16 +60,15 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(parent_id, token + match.rm_so, len);
                     parent_id[len] = '\0';
-                    printf("%04d: %s -> %s\n", lineCount, parent_id, current_id); // parent
                     addDependency(&head, &tail, parent_id, current_id, lineCount);
                 }
                 token = strtok(NULL, ",");
             }
         }
-        // Check for Children/Child line
+        // Children/Child line
         else if (strncmp(trimmed, "Children:", 9) == 0 || strncmp(trimmed, "Child:", 6) == 0) {
             char *child_ptr = strchr(trimmed, ':');
-            if (child_ptr) child_ptr++; // move past ':'
+            if (child_ptr) child_ptr++;
             char *token = strtok(child_ptr, ",");
             while (token) {
                 while (*token == ' ' || *token == '\t') token++;
@@ -83,7 +78,6 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(child_id, token + match.rm_so, len);
                     child_id[len] = '\0';
-                    printf("%04d: %s -> %s\n", lineCount, current_id, child_id); // child
                     addDependency(&head, &tail, current_id, child_id, lineCount);
                 }
                 token = strtok(NULL, ",");
@@ -94,15 +88,18 @@ void parseSrs(char *filePath) {
     regfree(&req_regex);
     fclose(file);
 
-    // Print all dependencies from the linked list
-    printf("\nDependencies stored in linked list:\n");
+    // Print all records and dependencies
     DepNode *curr = head;
     while (curr) {
-        printf("%04d: %s -> %s\n", curr->line, curr->from, curr->to);
+        if (curr->type == NODE_RECORD) {
+            printf("%04d: %s --\n", curr->line, curr->id);
+        } else if (curr->type == NODE_DEPENDENCY) {
+            printf("%04d: %s -> %s\n", curr->line, curr->from, curr->to);
+        }
         curr = curr->next;
     }
 
-    // Free the linked list
+    // Free the list
     while (head) {
         DepNode *tmp = head;
         head = head->next;
@@ -110,8 +107,23 @@ void parseSrs(char *filePath) {
     }
 }
 
+void addRecord(DepNode **head, DepNode **tail, const char *id, int line) {
+    DepNode *newNode = malloc(sizeof(DepNode));
+    newNode->type = NODE_RECORD;
+    strncpy(newNode->id, id, 32);
+    newNode->line = line;
+    newNode->next = NULL;
+    if (*tail) {
+        (*tail)->next = newNode;
+        *tail = newNode;
+    } else {
+        *head = *tail = newNode;
+    }
+}
+
 void addDependency(DepNode **head, DepNode **tail, const char *from, const char *to, int line) {
     DepNode *newNode = malloc(sizeof(DepNode));
+    newNode->type = NODE_DEPENDENCY;
     strncpy(newNode->from, from, 32);
     strncpy(newNode->to, to, 32);
     newNode->line = line;

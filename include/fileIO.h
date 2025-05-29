@@ -5,24 +5,30 @@
 #define FILEIO_H
 #include <stdio.h> //for file operations
 
-typedef struct {
-    char *id; //unique identifier for the srs
-    char *title; //name of the srs
-    char *parent; //description of the srs
-    char *child; //author of the srs
-} REQ; //structure to hold the srs information
+typedef enum {
+    NODE_RECORD,
+    NODE_DEPENDENCY
+} NodeType;
 
-//data structure to hold dependencies as a linkedlist
 typedef struct DepNode {
-    char from[32];
-    char to[32];
+    NodeType type;
     int line;
+    union {
+        struct { // For dependency
+            char from[32];
+            char to[32];
+        };
+        struct { // For record
+            char id[32];
+        };
+    };
     struct DepNode *next;
 } DepNode;
 
 void parseSrs(char *filePath); //function to read srs file
 //returns a file indicating the noted dependencies
 
+void addRecord(DepNode **head, DepNode **tail, const char *id, int line);
 void addDependency(DepNode **head, DepNode **tail, const char *from, const char *to, int line);
 //function to add a dependency to the linked list
 #endif  //eof
