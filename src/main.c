@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
     parseSrs(filePath); //calls parseSrs function to read the srs file
    
 
-    generateGraph(file); //generates graph of the dependencies
-    generateReport(file); //generates report of the dependencies
+    //generateGraph(file); //generates graph of the dependencies
+    //generateReport(file); //generates report of the dependencies
 
     return 0;
 
