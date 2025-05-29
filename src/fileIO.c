@@ -51,7 +51,7 @@ void trim(char *str) {
     *(end + 1) = 0;
 }
 
-void parseSrs(char *filePath) {
+void parseSrs(char *filePath, DepNode **head, DepNode **tail) {
     FILE *file = fopen(filePath, "r");
     if (!file) {
         printf("Could not open file: %s\n", filePath);
@@ -62,8 +62,6 @@ void parseSrs(char *filePath) {
     int lineCount = 0;
     char current_id[32] = "";
     int current_record_line = 0;
-
-    DepNode *head = NULL, *tail = NULL;
 
     // Print the first 3 lines
     while (fgets(line, sizeof(line), file) != NULL && lineCount < 3) {
@@ -89,7 +87,7 @@ void parseSrs(char *filePath) {
                 strncpy(current_id, trimmed + match.rm_so, len);
                 current_id[len] = '\0';
                 current_record_line = lineCount;
-                addRecord(&head, &tail, current_id, current_record_line);
+                addRecord(head, tail, current_id, current_record_line);
             }
         }
         // Parents/Parent line
@@ -106,7 +104,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(parent_id, token + match.rm_so, len);
                     parent_id[len] = '\0';
-                    addDependency(&head, &tail, parent_id, current_id, lineCount);
+                    addDependency(head, tail, parent_id, current_id, lineCount);
                 }
                 token = strtok(NULL, ",");
             }
@@ -125,7 +123,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(child_id, token + match.rm_so, len);
                     child_id[len] = '\0';
-                    addDependency(&head, &tail, current_id, child_id, lineCount);
+                    addDependency(head, tail, current_id, child_id, lineCount);
                 }
                 token = strtok(NULL, ",");
             }
@@ -136,7 +134,7 @@ void parseSrs(char *filePath) {
     fclose(file);
 
     // Print all records and dependencies
-    DepNode *curr = head;
+    DepNode *curr = *head;
     while (curr) {
         if (curr->type == NODE_RECORD) {
             printf("Line %d: %s --\n", curr->line, curr->id);
@@ -147,9 +145,9 @@ void parseSrs(char *filePath) {
     }
 
     // Free the list
-    while (head) {
-        DepNode *tmp = head;
-        head = head->next;
+    while (*head) {
+        DepNode *tmp = *head;
+        *head = (*head)->next;
         free(tmp);
     }
 }

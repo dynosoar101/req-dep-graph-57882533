@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     }
     char *filePath = argv[1]; //assigns the first command line argument to fileName
     //opens the file and does basic checking
-    parseSrs(filePath); //calls parseSrs function to read the srs file
+    parseSrs(filePath, &head, &tail);
     generateReport(head, "rdgg-report-57882533.md");
     //generateGraph(file); //generates graph of the dependencies
     //generateReport(file); //generates report of the dependencies

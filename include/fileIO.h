@@ -25,7 +25,7 @@ typedef struct DepNode {
     struct DepNode *next;
 } DepNode;
 
-void parseSrs(char *filePath); //function to read srs file
+void parseSrs(char *filePath, DepNode **head, DepNode **tail); //function to read srs file
 //returns a file indicating the noted dependencies
 
 void addRecord(DepNode **head, DepNode **tail, const char *id, int line);
