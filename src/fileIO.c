@@ -18,6 +18,7 @@ void parseSrs(char *filePath) {
 
     char line[256];
     int lineCount = 0;
+    char current_id[32] = "";
 
     // Print the first 3 lines
     while (fgets(line, sizeof(line), file) != NULL && lineCount < 3) {
@@ -25,29 +26,63 @@ void parseSrs(char *filePath) {
         lineCount++;
     }
 
-    // Prepare regex for requirement pattern
-    regex_t regex;
+    regex_t req_regex;
     const char *pattern = "REQ-[A-Z]{2}-[A-Z]{4}-[0-9]{4}";
-    regcomp(&regex, pattern, REG_EXTENDED);
+    regcomp(&req_regex, pattern, REG_EXTENDED);
 
     // Continue scanning the rest of the file
     while (fgets(line, sizeof(line), file) != NULL) {
         lineCount++;
-        regmatch_t match;
-        char *cursor = line;
-        int offset = 0;
-        while (regexec(&regex, cursor, 1, &match, 0) == 0) {
-            int len = match.rm_eo - match.rm_so;
-            char req_id[32];
-            strncpy(req_id, cursor + match.rm_so, len);
-            req_id[len] = '\0';
-            printf("%04d: %s\n", lineCount, req_id);
-            cursor += match.rm_eo;
-            offset += match.rm_eo;
+
+        // Check for ID line
+        if (strncmp(line, "ID:", 3) == 0) {
+            regmatch_t match;
+            if (regexec(&req_regex, line, 1, &match, 0) == 0) {
+                int len = match.rm_eo - match.rm_so;
+                strncpy(current_id, line + match.rm_so, len);
+                current_id[len] = '\0';
+                printf("%04d: %s --\n", lineCount, current_id);
+            }
+        }
+        // Check for Parents line
+        else if (strncmp(line, "Parents:", 8) == 0) {
+            char *parent_ptr = line + 8;
+            char *token = strtok(parent_ptr, ",");
+            while (token) {
+                // Remove leading/trailing whitespace
+                while (*token == ' ' || *token == '\t') token++;
+                regmatch_t match;
+                if (regexec(&req_regex, token, 1, &match, 0) == 0) {
+                    char parent_id[32];
+                    int len = match.rm_eo - match.rm_so;
+                    strncpy(parent_id, token + match.rm_so, len);
+                    parent_id[len] = '\0';
+                    printf("%04d: %s -> %s\n", lineCount, parent_id, current_id);
+                }
+                token = strtok(NULL, ",");
+            }
+        }
+        // Check for Children line
+        else if (strncmp(line, "Children:", 9) == 0) {
+            char *child_ptr = line + 9;
+            char *token = strtok(child_ptr, ",");
+            while (token) {
+                // Remove leading/trailing whitespace
+                while (*token == ' ' || *token == '\t') token++;
+                regmatch_t match;
+                if (regexec(&req_regex, token, 1, &match, 0) == 0) {
+                    char child_id[32];
+                    int len = match.rm_eo - match.rm_so;
+                    strncpy(child_id, token + match.rm_so, len);
+                    child_id[len] = '\0';
+                    printf("%04d: %s -> %s\n", lineCount, current_id, child_id);
+                }
+                token = strtok(NULL, ",");
+            }
         }
     }
 
-    regfree(&regex);
+    regfree(&req_regex);
     fclose(file);
 }
 //eof
