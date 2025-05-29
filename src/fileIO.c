@@ -34,22 +34,26 @@ void parseSrs(char *filePath) {
     while (fgets(line, sizeof(line), file) != NULL) {
         lineCount++;
 
+        // Trim leading spaces
+        char *trimmed = line;
+        while (*trimmed == ' ' || *trimmed == '\t') trimmed++;
+
         // Check for ID line (record)
-        if (strncmp(line, "ID:", 3) == 0) {
+        if (strncmp(trimmed, "ID:", 3) == 0) {
             regmatch_t match;
-            if (regexec(&req_regex, line, 1, &match, 0) == 0) {
+            if (regexec(&req_regex, trimmed, 1, &match, 0) == 0) {
                 int len = match.rm_eo - match.rm_so;
-                strncpy(current_id, line + match.rm_so, len);
+                strncpy(current_id, trimmed + match.rm_so, len);
                 current_id[len] = '\0';
                 printf("%04d: %s --\n", lineCount, current_id); // record
             }
         }
-        // Check for Parents line
-        else if (strncmp(line, "Parents:", 8) == 0) {
-            char *parent_ptr = line + 8;
+        // Check for Parents/Parent line
+        else if (strncmp(trimmed, "Parents:", 8) == 0 || strncmp(trimmed, "Parent:", 7) == 0) {
+            char *parent_ptr = strchr(trimmed, ':');
+            if (parent_ptr) parent_ptr++; // move past ':'
             char *token = strtok(parent_ptr, ",");
             while (token) {
-                // Remove leading/trailing whitespace
                 while (*token == ' ' || *token == '\t') token++;
                 regmatch_t match;
                 if (regexec(&req_regex, token, 1, &match, 0) == 0) {
@@ -62,12 +66,12 @@ void parseSrs(char *filePath) {
                 token = strtok(NULL, ",");
             }
         }
-        // Check for Children line
-        else if (strncmp(line, "Children:", 9) == 0) {
-            char *child_ptr = line + 9;
+        // Check for Children/Child line
+        else if (strncmp(trimmed, "Children:", 9) == 0 || strncmp(trimmed, "Child:", 6) == 0) {
+            char *child_ptr = strchr(trimmed, ':');
+            if (child_ptr) child_ptr++; // move past ':'
             char *token = strtok(child_ptr, ",");
             while (token) {
-                // Remove leading/trailing whitespace
                 while (*token == ' ' || *token == '\t') token++;
                 regmatch_t match;
                 if (regexec(&req_regex, token, 1, &match, 0) == 0) {
