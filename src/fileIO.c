@@ -27,7 +27,7 @@ void parseSrs(char *filePath) {
 
     // Prepare regex for requirement pattern
     regex_t regex;
-    const char *pattern = "REQ-[0-9]{2}-[0-9]{4}-[0-9]{4}";
+    const char *pattern = "REQ-[A-Z]{2}-[A-Z]{4}-[0-9]{4}";
     regcomp(&regex, pattern, REG_EXTENDED);
 
     // Continue scanning the rest of the file
