@@ -10,7 +10,7 @@ void generateGraph(FILE *file); //function to generate the graph of the dependen
 //takes in parsed file from fileIO parseSrs function
 //prints ascii graph to console
 
-REQ *generateReport(FILE *file); //function to generate the report of the dependencies
+void *generateReport(FILE *file); //function to generate the report of the dependencies
 //returns a report detailing all of the dependencies
 
 #endif //eof 

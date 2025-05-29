@@ -19,7 +19,7 @@ void generateGraph(FILE *file) {
 }
 
 //to be implemented
-REQ *generateReport(FILE *file) {
+void *generateReport(FILE *file) {
     //open the file
     //check if file is empty or if no valid file is given
     //parse the file and generate the report
