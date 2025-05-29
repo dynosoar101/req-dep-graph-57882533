@@ -34,14 +34,14 @@ void parseSrs(char *filePath) {
     while (fgets(line, sizeof(line), file) != NULL) {
         lineCount++;
 
-        // Check for ID line
+        // Check for ID line (record)
         if (strncmp(line, "ID:", 3) == 0) {
             regmatch_t match;
             if (regexec(&req_regex, line, 1, &match, 0) == 0) {
                 int len = match.rm_eo - match.rm_so;
                 strncpy(current_id, line + match.rm_so, len);
                 current_id[len] = '\0';
-                printf("%04d: %s --\n", lineCount, current_id);
+                printf("%04d: %s --\n", lineCount, current_id); // record
             }
         }
         // Check for Parents line
@@ -57,7 +57,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(parent_id, token + match.rm_so, len);
                     parent_id[len] = '\0';
-                    printf("%04d: %s -> %s\n", lineCount, parent_id, current_id);
+                    printf("%04d: %s -> %s\n", lineCount, parent_id, current_id); // parent
                 }
                 token = strtok(NULL, ",");
             }
@@ -75,7 +75,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(child_id, token + match.rm_so, len);
                     child_id[len] = '\0';
-                    printf("%04d: %s -> %s\n", lineCount, current_id, child_id);
+                    printf("%04d: %s -> %s\n", lineCount, current_id, child_id); // child
                 }
                 token = strtok(NULL, ",");
             }
