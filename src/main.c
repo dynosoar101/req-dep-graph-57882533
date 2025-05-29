@@ -7,6 +7,8 @@
 
 //main takes in argc and argv to allow for command line arguments
 int main(int argc, char *argv[]) { 
+    DepNode *head = NULL, *tail = NULL; // <-- define head and tail
+
     if (argc < 2) { //if no command line argument is provided
         printf("Usage: %s <srs-file>\n", argv[0]); //prints usage message
         return 1; //returns error code
