@@ -3,6 +3,7 @@
 
 #ifndef FILEIO_H //defines FILEIO_H if not already defined
 #define FILEIO_H
+#include <stdio.h> //for file operations
 
 typedef struct {
     char *id; //unique identifier for the srs
