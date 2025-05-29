@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <regex.h> //for regex operations
+#include <ctype.h>
 
 void addRecord(DepNode **head, DepNode **tail, const char *id, int line) {
     DepNode *newNode = malloc(sizeof(DepNode));
@@ -38,6 +39,18 @@ void addDependency(DepNode **head, DepNode **tail, const char *from, const char 
     }
 }
 
+// Helper to trim leading/trailing whitespace in-place
+void trim(char *str) {
+    // Trim leading
+    while (isspace((unsigned char)*str)) str++;
+    // If all spaces
+    if (*str == 0) return;
+    // Trim trailing
+    char *end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) end--;
+    *(end + 1) = 0;
+}
+
 void parseSrs(char *filePath) {
     FILE *file = fopen(filePath, "r");
     if (!file) {
@@ -45,7 +58,7 @@ void parseSrs(char *filePath) {
         return;
     }
 
-    char line[256];
+    char line[512];
     int lineCount = 0;
     char current_id[32] = "";
     int current_record_line = 0;
@@ -82,16 +95,17 @@ void parseSrs(char *filePath) {
         else if (strncmp(trimmed, "Parents:", 8) == 0 || strncmp(trimmed, "Parent:", 7) == 0) {
             char *parent_ptr = strchr(trimmed, ':');
             if (parent_ptr) parent_ptr++;
+            // Tokenize and trim each parent
             char *token = strtok(parent_ptr, ",");
             while (token) {
-                while (*token == ' ' || *token == '\t') token++;
+                trim(token);
                 regmatch_t match;
                 if (regexec(&req_regex, token, 1, &match, 0) == 0) {
                     char parent_id[32];
                     int len = match.rm_eo - match.rm_so;
                     strncpy(parent_id, token + match.rm_so, len);
                     parent_id[len] = '\0';
-                    addDependency(&head, &tail, parent_id, current_id, lineCount); // <-- use lineCount here!
+                    addDependency(&head, &tail, parent_id, current_id, lineCount);
                 }
                 token = strtok(NULL, ",");
             }
@@ -100,16 +114,17 @@ void parseSrs(char *filePath) {
         else if (strncmp(trimmed, "Children:", 9) == 0 || strncmp(trimmed, "Child:", 6) == 0) {
             char *child_ptr = strchr(trimmed, ':');
             if (child_ptr) child_ptr++;
+            // Tokenize and trim each child
             char *token = strtok(child_ptr, ",");
             while (token) {
-                while (*token == ' ' || *token == '\t') token++;
+                trim(token);
                 regmatch_t match;
                 if (regexec(&req_regex, token, 1, &match, 0) == 0) {
                     char child_id[32];
                     int len = match.rm_eo - match.rm_so;
                     strncpy(child_id, token + match.rm_so, len);
                     child_id[len] = '\0';
-                    addDependency(&head, &tail, current_id, child_id, lineCount); // <-- use lineCount here!
+                    addDependency(&head, &tail, current_id, child_id, lineCount);
                 }
                 token = strtok(NULL, ",");
             }
