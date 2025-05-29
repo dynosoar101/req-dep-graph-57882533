@@ -33,12 +33,11 @@ void generateGraph(DepNode *head, const char *filename) {
 void generateReport(DepNode *head, const char *filename) {
     FILE *out = fopen(filename, "w");
     if (!out) {
-    }   printf("Could not open report file for writing.\n");
+        printf("Could not open report file for writing.\n");
         return;
-    fclose(out);
-}
+    }
     DepNode *curr = head;
-//eofhile (curr) {
+    while (curr) {
         if (curr->type == NODE_RECORD) {
             fprintf(out, "Line %d: %s --\n", curr->line, curr->id);
         } else if (curr->type == NODE_DEPENDENCY) {
@@ -46,7 +45,6 @@ void generateReport(DepNode *head, const char *filename) {
         }
         curr = curr->next;
     }
-
     fclose(out);
 }
 
