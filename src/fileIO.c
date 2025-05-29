@@ -33,7 +33,8 @@ void parseSrs(char *filePath) {
     regcomp(&req_regex, pattern, REG_EXTENDED);
 
     while (fgets(line, sizeof(line), file) != NULL) {
-        lineCount++;
+        lineCount++; // increment as soon as you read the line
+
         char *trimmed = line;
         while (*trimmed == ' ' || *trimmed == '\t') trimmed++;
 
@@ -60,7 +61,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(parent_id, token + match.rm_so, len);
                     parent_id[len] = '\0';
-                    addDependency(&head, &tail, parent_id, current_id, lineCount);
+                    addDependency(&head, &tail, parent_id, current_id, lineCount); // use current lineCount
                 }
                 token = strtok(NULL, ",");
             }
@@ -78,7 +79,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(child_id, token + match.rm_so, len);
                     child_id[len] = '\0';
-                    addDependency(&head, &tail, current_id, child_id, lineCount);
+                    addDependency(&head, &tail, current_id, child_id, lineCount); // use current lineCount
                 }
                 token = strtok(NULL, ",");
             }
