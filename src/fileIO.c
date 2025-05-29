@@ -63,8 +63,7 @@ void parseSrs(char *filePath) {
     regcomp(&req_regex, pattern, REG_EXTENDED);
 
     while (fgets(line, sizeof(line), file) != NULL) {
-        lineCount++; // increment as soon as you read the line
-
+        lineCount++;
         char *trimmed = line;
         while (*trimmed == ' ' || *trimmed == '\t') trimmed++;
 
@@ -75,7 +74,7 @@ void parseSrs(char *filePath) {
                 int len = match.rm_eo - match.rm_so;
                 strncpy(current_id, trimmed + match.rm_so, len);
                 current_id[len] = '\0';
-                current_record_line = lineCount; // store the line number of this record
+                current_record_line = lineCount;
                 addRecord(&head, &tail, current_id, current_record_line);
             }
         }
@@ -92,7 +91,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(parent_id, token + match.rm_so, len);
                     parent_id[len] = '\0';
-                    addDependency(&head, &tail, parent_id, current_id, current_record_line); // use record's line number
+                    addDependency(&head, &tail, parent_id, current_id, current_record_line); // always use current_record_line
                 }
                 token = strtok(NULL, ",");
             }
@@ -110,7 +109,7 @@ void parseSrs(char *filePath) {
                     int len = match.rm_eo - match.rm_so;
                     strncpy(child_id, token + match.rm_so, len);
                     child_id[len] = '\0';
-                    addDependency(&head, &tail, current_id, child_id, current_record_line); // use record's line number
+                    addDependency(&head, &tail, current_id, child_id, current_record_line); // always use current_record_line
                 }
                 token = strtok(NULL, ",");
             }
