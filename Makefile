@@ -1,18 +1,25 @@
-CFLAGS = -Wall -std=c11
+CC = gcc
+CFLAGS = -Wall -std=c11 -Iinclude
 
-all: main 
+SRC = src
+INCLUDE = include
+OBJ = obj
 
-clean: 
-	rm -f main *.o
-	
-main: main.o fileIO.o deps.o
-	gcc $(CFLAGS) -lm fileIO.o deps.o -o main 
+OBJS = $(OBJ)/main.o $(OBJ)/fileIO.o $(OBJ)/deps.o
 
-main.o: main.c fileIO.h deps.h
-	gcc $(CFLAGS) -c main.c -o main.o
+all: rdgg
 
-fileIO.o: fileIO.c fileIO.h 
-	gcc $(CFLAGS) -c fileIO.c -o fileIO.o
+rdgg: $(OBJS)
+	$(CC) $(CFLAGS) -o rdgg $(OBJS)
 
-deps.o: deps.c deps.h fileIO.h
-	gcc $(CFLAGS) -c deps.c -o deps.o
+$(OBJ)/main.o: $(SRC)/main.c $(INCLUDE)/fileIO.h $(INCLUDE)/deps.h
+	$(CC) $(CFLAGS) -c $(SRC)/main.c -o $(OBJ)/main.o
+
+$(OBJ)/fileIO.o: $(SRC)/fileIO.c $(INCLUDE)/fileIO.h
+	$(CC) $(CFLAGS) -c $(SRC)/fileIO.c -o $(OBJ)/fileIO.o
+
+$(OBJ)/deps.o: $(SRC)/deps.c $(INCLUDE)/deps.h
+	$(CC) $(CFLAGS) -c $(SRC)/deps.c -o $(OBJ)/deps.o
+
+clean:
+	rm -f $(OBJ)/*.o rdgg
