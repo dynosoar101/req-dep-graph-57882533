@@ -10,7 +10,7 @@ void generateGraph(DepNode *head, const char *filename); //function to generate 
 //takes in parsed linkedlist form parsed srs file and prints it
 //prints ascii graph to console
 
-void generateReport(DepNode *head, const char *filename); //function to generate the report of the dependencies
+void generateReport(DepNode *head, const char *filename, const char *srsFile); //function to generate the report of the dependencies
 //returns a report detailing all of the dependencies as an md
 
 #endif //eof

@@ -30,12 +30,26 @@ void generateGraph(DepNode *head, const char *filename) {
     fclose(out);
 }
 
-void generateReport(DepNode *head, const char *filename) {
+void generateReport(DepNode *head, const char *filename, const char *srsFile) {
     FILE *out = fopen(filename, "w");
     if (!out) {
         printf("Could not open report file for writing.\n");
         return;
     }
+
+    // Print the first 3 lines of the SRS file
+    FILE *in = fopen(srsFile, "r");
+    if (in) {
+        char buf[512];
+        int count = 0;
+        while (fgets(buf, sizeof(buf), in) && count < 3) {
+            fputs(buf, out);
+            count++;
+        }
+        fputs("\n", out); // Add a blank line after the header
+        fclose(in);
+    }
+
     DepNode *curr = head;
     while (curr) {
         if (curr->type == NODE_RECORD) {
@@ -45,6 +59,7 @@ void generateReport(DepNode *head, const char *filename) {
         }
         curr = curr->next;
     }
+
     fclose(out);
 }
 
