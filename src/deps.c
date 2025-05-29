@@ -10,7 +10,7 @@
 #include <string.h>
 
 //to be implemented
-void generateGraph(File *file) {
+void generateGraph(FILE *file) {
     //opens the file
     //check if file is empty or if no valid file is given
     //parse the file to note dependencies and generate the graph
@@ -19,7 +19,7 @@ void generateGraph(File *file) {
 }
 
 //to be implemented
-File *generateReport(File *file) {
+REQ *generateReport(FILE *file) {
     //open the file
     //check if file is empty or if no valid file is given
     //parse the file and generate the report
