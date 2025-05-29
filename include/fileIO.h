@@ -12,7 +12,17 @@ typedef struct {
     char *child; //author of the srs
 } REQ; //structure to hold the srs information
 
+//data structure to hold dependencies as a linkedlist
+typedef struct DepNode {
+    char from[32];
+    char to[32];
+    int line;
+    struct DepNode *next;
+} DepNode;
+
 void parseSrs(char *filePath); //function to read srs file
 //returns a file indicating the noted dependencies
 
+void addDependency(DepNode **head, DepNode **tail, const char *from, const char *to, int line);
+//function to add a dependency to the linked list
 #endif  //eof

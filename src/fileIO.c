@@ -20,6 +20,9 @@ void parseSrs(char *filePath) {
     int lineCount = 0;
     char current_id[32] = "";
 
+    // Linked list for dependencies
+    DepNode *head = NULL, *tail = NULL;
+
     // Print the first 3 lines
     while (fgets(line, sizeof(line), file) != NULL && lineCount < 3) {
         printf("%s", line);
@@ -62,6 +65,7 @@ void parseSrs(char *filePath) {
                     strncpy(parent_id, token + match.rm_so, len);
                     parent_id[len] = '\0';
                     printf("%04d: %s -> %s\n", lineCount, parent_id, current_id); // parent
+                    addDependency(&head, &tail, parent_id, current_id, lineCount);
                 }
                 token = strtok(NULL, ",");
             }
@@ -80,6 +84,7 @@ void parseSrs(char *filePath) {
                     strncpy(child_id, token + match.rm_so, len);
                     child_id[len] = '\0';
                     printf("%04d: %s -> %s\n", lineCount, current_id, child_id); // child
+                    addDependency(&head, &tail, current_id, child_id, lineCount);
                 }
                 token = strtok(NULL, ",");
             }
@@ -88,6 +93,35 @@ void parseSrs(char *filePath) {
 
     regfree(&req_regex);
     fclose(file);
+
+    // Print all dependencies from the linked list
+    printf("\nDependencies stored in linked list:\n");
+    DepNode *curr = head;
+    while (curr) {
+        printf("%04d: %s -> %s\n", curr->line, curr->from, curr->to);
+        curr = curr->next;
+    }
+
+    // Free the linked list
+    while (head) {
+        DepNode *tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+}
+
+void addDependency(DepNode **head, DepNode **tail, const char *from, const char *to, int line) {
+    DepNode *newNode = malloc(sizeof(DepNode));
+    strncpy(newNode->from, from, 32);
+    strncpy(newNode->to, to, 32);
+    newNode->line = line;
+    newNode->next = NULL;
+    if (*tail) {
+        (*tail)->next = newNode;
+        *tail = newNode;
+    } else {
+        *head = *tail = newNode;
+    }
 }
 //eof
 
