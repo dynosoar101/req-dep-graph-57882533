@@ -1,3 +1,7 @@
+# <center>Software Requirements Specification </center>
+<center> EECS 22L - Spring 2025 </center>
+<center> Project 1 - Chess Game </center>
+
 Line 23: REQ-FN-FEAT-0000 --
 Line 26: REQ-FN-FEAT-0000 -> REQ-FN-FEAT-1001
 Line 26: REQ-FN-FEAT-0000 -> REQ-FN-FEAT-1002

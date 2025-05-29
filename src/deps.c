@@ -10,24 +10,29 @@
 #include <string.h>
 
 //to be implemented
-void generateGraph(DepNode *head, const char *filename) {
-    FILE *out = fopen(filename, "w");
-    if (!out) {
-        printf("Could not open graph file for writing.\n");
-        return;
+void generateGraph(DepNode *head, const char *srsFile) {
+    // Print the first 3 lines of the SRS file to the terminal
+    FILE *in = fopen(srsFile, "r");
+    if (in) {
+        char buf[512];
+        int count = 0;
+        while (fgets(buf, sizeof(buf), in) && count < 3) {
+            fputs(buf, stdout);
+            count++;
+        }
+        fputs("\n", stdout); // Add a blank line after the header
+        fclose(in);
     }
 
     DepNode *curr = head;
     while (curr) {
         if (curr->type == NODE_RECORD) {
-            fprintf(out, "Line %d: %s --\n", curr->line, curr->id);
+            printf("Line %d: %s --\n", curr->line, curr->id);
         } else if (curr->type == NODE_DEPENDENCY) {
-            fprintf(out, "Line %d: %s -> %s\n", curr->line, curr->from, curr->to);
+            printf("Line %d: %s -> %s\n", curr->line, curr->from, curr->to);
         }
         curr = curr->next;
     }
-
-    fclose(out);
 }
 
 void generateReport(DepNode *head, const char *filename, const char *srsFile) {
