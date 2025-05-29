@@ -17,9 +17,7 @@ int main(int argc, char *argv[]) {
     //opens the file and does basic checking
     parseSrs(filePath, &head, &tail);
     generateReport(head, "rdgg-report-57882533.md");
-    //generateGraph(file); //generates graph of the dependencies
-    //generateReport(file); //generates report of the dependencies
-
+    generateGraph(head, "rdgg-report-57882533.md"); //generates graph of the dependencies
     // Free the list
     while (head) {
         DepNode *tmp = head;

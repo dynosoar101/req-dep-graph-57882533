@@ -10,23 +10,35 @@
 #include <string.h>
 
 //to be implemented
-void generateGraph(FILE *file) {
-    //opens the file
-    //check if file is empty or if no valid file is given
-    //parse the file to note dependencies and generate the graph
-    //prints this graph
-    return;
-}
-
-void generateReport(DepNode *head, const char *filename) {
+void generateGraph(DepNode *head, const char *filename) {
     FILE *out = fopen(filename, "w");
     if (!out) {
-        printf("Could not open report file for writing.\n");
+        printf("Could not open graph file for writing.\n");
         return;
     }
 
     DepNode *curr = head;
     while (curr) {
+        if (curr->type == NODE_RECORD) {
+            fprintf(out, "Line %d: %s --\n", curr->line, curr->id);
+        } else if (curr->type == NODE_DEPENDENCY) {
+            fprintf(out, "Line %d: %s -> %s\n", curr->line, curr->from, curr->to);
+        }
+        curr = curr->next;
+    }
+
+    fclose(out);
+}
+
+void generateReport(DepNode *head, const char *filename) {
+    FILE *out = fopen(filename, "w");
+    if (!out) {
+    }   printf("Could not open report file for writing.\n");
+        return;
+    fclose(out);
+}
+    DepNode *curr = head;
+//eofhile (curr) {
         if (curr->type == NODE_RECORD) {
             fprintf(out, "Line %d: %s --\n", curr->line, curr->id);
         } else if (curr->type == NODE_DEPENDENCY) {
