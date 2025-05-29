@@ -12,12 +12,16 @@ int main(int argc, char *argv[]) {
         return 1; //returns error code
     }
     char *filePath = argv[1]; //assigns the first command line argument to fileName
+    //we are going to use a linkedlist to store the dependencies
+    //this is because a linkedlist can point to the next node
+    //ie tail can point to head. this is good as it shows a linkage
+    //and is exactly how we want to represent our dependencies.
     DepNode *head = NULL, *tail = NULL; // <-- define head and tail
 
     //opens the file and does basic checking
-    parseSrs(filePath, &head, &tail);
-    generateReport(head, "rdgg-report-57882533.md", filePath);
-    generateGraph(head, filePath);
+    parseSrs(filePath, &head, &tail); //reas srs and updates deps linkedlist
+    generateReport(head, "rdgg-report-57882533.md", filePath); //generates md file
+    generateGraph(head, filePath); //prints contents of md file to terminal
     
     // Free the list
     while (head) {
