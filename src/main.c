@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     }
     fileName = argv[1]; //assigns the first command line argument to fileName
     //opens the file and does basic checking
-    File *file = parseSrs(fileName);
+    FILE *file = parseSrs(fileName);
     if (file == NULL) {
         printf("Error: Could not parse srs file\n");
         return 1;

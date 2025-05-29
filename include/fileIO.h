@@ -9,9 +9,9 @@ typedef struct {
     char *title; //name of the srs
     char *parent; //description of the srs
     char *child; //author of the srs
-} File; //structure to hold the srs information
+} REQ; //structure to hold the srs information
 
-File *parseSrs(char *filename); //function to read srs file
+FILE *parseSrs(char *filename); //function to read srs file
 //returns a file indicating the noted dependencies
 
 #endif  //eof

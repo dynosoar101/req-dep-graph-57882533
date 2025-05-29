@@ -10,8 +10,8 @@
 #include <regex.h> //for regex operations
 
 //the user provides a file path to the srs file
-File *parseSrs(char *filename) {//this function parses the srs file and returns a file containing the required dependencies
-    File *file = fopen(filename, "r"); //opens the file in read mode
+FILE *parseSrs(char *filename) {//this function parses the srs file and returns a file containing the required dependencies
+    FILE *file = fopen(filename, "r"); //opens the file in read mode
     //print the first 3 lines of the file
     int lineCount = 0; //initialize line count
     char line[256]; //buffer to hold each line
