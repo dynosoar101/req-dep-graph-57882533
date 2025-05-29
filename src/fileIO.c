@@ -59,7 +59,7 @@ void parseSrs(char *filePath) {
     }
 
     char line[512];
-    int lineCount = 1;
+    int lineCount = 0;
     char current_id[32] = "";
     int current_record_line = 0;
 
@@ -70,6 +70,7 @@ void parseSrs(char *filePath) {
         printf("%s", line);
         lineCount++;
     }
+    lineCount++; // Increment lineCount for the first 3 lines
 
     regex_t req_regex;
     const char *pattern = "REQ-[A-Z]{2}-[A-Z]{4}-[0-9]{4}";
